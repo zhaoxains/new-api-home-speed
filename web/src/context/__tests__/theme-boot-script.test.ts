@@ -30,6 +30,10 @@ const html = readFileSync(
   'utf8'
 )
 const bootScript = html.match(/<script>([\s\S]*?)<\/script>/)?.[1] ?? ''
+const entrySource = readFileSync(
+  resolve(import.meta.dirname, '../../main.tsx'),
+  'utf8'
+)
 
 function runBootScript() {
   new Function(bootScript)()
@@ -56,6 +60,18 @@ afterEach(() => {
 })
 
 describe('index.html theme boot script', () => {
+  it('shows a static loading status until the app mounts', () => {
+    const page = new DOMParser().parseFromString(html, 'text/html')
+    const status = page.querySelector('#root [data-app-loading]')
+
+    expect(status?.getAttribute('role')).toBe('status')
+    expect(status?.getAttribute('aria-live')).toBe('polite')
+    expect(status?.textContent).toContain('正在加载页面 / Loading page')
+    expect(entrySource).toContain(
+      "rootElement.querySelector('[data-app-loading]')"
+    )
+  })
+
   it('applies the saved dark preference to html before React mounts', () => {
     mockSystemDarkMode(false)
     localStorage.setItem(THEME_STORAGE_KEYS.mode, 'dark')

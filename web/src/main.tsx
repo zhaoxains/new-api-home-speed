@@ -100,7 +100,7 @@ if (!rootElement) {
     /* empty */
   }
 })()
-if (!rootElement.innerHTML) {
+if (!rootElement.innerHTML || rootElement.querySelector('[data-app-loading]')) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
