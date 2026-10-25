@@ -41,10 +41,21 @@
         color: #334155;
         display: flex;
         font-family: system-ui, sans-serif;
-        gap: 0.75rem;
         justify-content: center;
         min-height: 100vh;
         min-height: 100svh;
+      }
+      .app-loading__content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        width: min(20rem, calc(100vw - 3rem));
+      }
+      .app-loading__status {
+        align-items: center;
+        display: flex;
+        gap: 0.625rem;
+        font-size: 0.875rem;
       }
       .dark #app-loading {
         background: #111827;
@@ -58,6 +69,35 @@
         height: 1rem;
         width: 1rem;
       }
+      .app-loading__track {
+        background: #dbe3ed;
+        border-radius: 999px;
+        height: 0.25rem;
+        overflow: hidden;
+      }
+      .dark .app-loading__track {
+        background: #334155;
+      }
+      #app-loading-fill {
+        background: #2878d0;
+        border-radius: inherit;
+        display: block;
+        height: 100%;
+        transition: width 220ms ease;
+        width: 0%;
+      }
+      .dark #app-loading-fill {
+        background: #70b7f2;
+      }
+      .app-loading__meta {
+        color: #64748b;
+        display: flex;
+        font-size: 0.75rem;
+        justify-content: space-between;
+      }
+      .dark .app-loading__meta {
+        color: #94a3b8;
+      }
       @keyframes app-loading-spin {
         to {
           transform: rotate(360deg);
@@ -66,6 +106,9 @@
       @media (prefers-reduced-motion: reduce) {
         #app-loading-indicator {
           animation: none;
+        }
+        #app-loading-fill {
+          transition: none;
         }
       }
     </style>
@@ -76,9 +119,66 @@
   <body>
     <div id="root" translate="no" class="notranslate">
       <div id="app-loading" data-app-loading role="status" aria-live="polite">
-        <span id="app-loading-indicator" aria-hidden="true"></span>
-        <span>正在加载页面 / Loading page</span>
+        <div class="app-loading__content">
+          <div class="app-loading__status">
+            <span id="app-loading-indicator" aria-hidden="true"></span>
+            <span>正在加载页面 / Loading page</span>
+          </div>
+          <div
+            class="app-loading__track"
+            role="progressbar"
+            aria-label="预计加载进度 / Estimated loading progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            data-app-loading-progress
+          >
+            <span id="app-loading-fill" data-app-loading-fill></span>
+          </div>
+          <div class="app-loading__meta">
+            <span>预计进度 / Estimated</span>
+            <span data-app-loading-percent>~0%</span>
+          </div>
+        </div>
       </div>
     </div>
+    <script id="app-loading-progress-script">
+      ;(function () {
+        var bar = document.querySelector('[data-app-loading-progress]')
+        var fill = document.querySelector('[data-app-loading-fill]')
+        var label = document.querySelector('[data-app-loading-percent]')
+        if (!bar || !fill || !label) return
+
+        var progress = 0
+        var update = function (value) {
+          var displayedProgress = Math.round(value)
+          bar.setAttribute('aria-valuenow', String(displayedProgress))
+          bar.setAttribute(
+            'aria-valuetext',
+            '预计 ' +
+              displayedProgress +
+              '% / Estimated ' +
+              displayedProgress +
+              '%'
+          )
+          fill.style.width = displayedProgress + '%'
+          label.textContent = '~' + displayedProgress + '%'
+        }
+        var timer = window.setInterval(function () {
+          if (progress >= 90) return
+          progress += Math.max(0.25, (90 - progress) * 0.035)
+          update(Math.min(progress, 90))
+        }, 250)
+
+        window.addEventListener(
+          'newapi:app-ready',
+          function () {
+            window.clearInterval(timer)
+            update(100)
+          },
+          { once: true }
+        )
+      })()
+    </script>
   </body>
 </html>

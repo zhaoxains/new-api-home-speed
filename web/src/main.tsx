@@ -101,6 +101,7 @@ if (!rootElement) {
   }
 })()
 if (!rootElement.innerHTML || rootElement.querySelector('[data-app-loading]')) {
+  window.dispatchEvent(new Event('newapi:app-ready'))
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
