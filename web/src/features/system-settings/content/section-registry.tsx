@@ -18,11 +18,6 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import type { ContentSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
-import {
-  CONTENT_DEFAULT_SECTION,
-  CONTENT_SECTION,
-  CONTENT_SECTION_IDS,
-} from '../section-ids'
 import { AnnouncementsSection } from './announcements-section'
 import { ApiInfoSection } from './api-info-section'
 import { ChatSettingsSection } from './chat-settings-section'
@@ -44,7 +39,7 @@ function validateDataExportDefaultTime(value: string): 'week' | 'hour' | 'day' {
 
 const CONTENT_SECTIONS = [
   {
-    id: CONTENT_SECTION.dashboard,
+    id: 'dashboard',
     titleKey: 'Data Dashboard',
     build: (settings: ContentSettings) => (
       <DashboardSection
@@ -59,7 +54,7 @@ const CONTENT_SECTIONS = [
     ),
   },
   {
-    id: CONTENT_SECTION.announcements,
+    id: 'announcements',
     titleKey: 'Announcements',
     build: (settings: ContentSettings) => (
       <AnnouncementsSection
@@ -69,7 +64,7 @@ const CONTENT_SECTIONS = [
     ),
   },
   {
-    id: CONTENT_SECTION.apiInfo,
+    id: 'api-info',
     titleKey: 'API Addresses',
     build: (settings: ContentSettings) => (
       <ApiInfoSection
@@ -79,7 +74,7 @@ const CONTENT_SECTIONS = [
     ),
   },
   {
-    id: CONTENT_SECTION.faq,
+    id: 'faq',
     titleKey: 'FAQ',
     build: (settings: ContentSettings) => (
       <FAQSection
@@ -89,7 +84,7 @@ const CONTENT_SECTIONS = [
     ),
   },
   {
-    id: CONTENT_SECTION.uptimeKuma,
+    id: 'uptime-kuma',
     titleKey: 'Uptime Kuma',
     build: (settings: ContentSettings) => (
       <UptimeKumaSection
@@ -99,14 +94,14 @@ const CONTENT_SECTIONS = [
     ),
   },
   {
-    id: CONTENT_SECTION.chat,
+    id: 'chat',
     titleKey: 'Chat Presets',
     build: (settings: ContentSettings) => (
       <ChatSettingsSection defaultValue={settings.Chats} />
     ),
   },
   {
-    id: CONTENT_SECTION.drawing,
+    id: 'drawing',
     titleKey: 'Drawing',
     build: (settings: ContentSettings) => (
       <DrawingSettingsSection
@@ -123,19 +118,20 @@ const CONTENT_SECTIONS = [
   },
 ] as const
 
-export type ContentSectionId = (typeof CONTENT_SECTION_IDS)[number]
+export type ContentSectionId = (typeof CONTENT_SECTIONS)[number]['id']
 
 const contentRegistry = createSectionRegistry<
   ContentSectionId,
   ContentSettings
 >({
   sections: CONTENT_SECTIONS,
-  defaultSection: CONTENT_DEFAULT_SECTION,
+  defaultSection: 'dashboard',
   basePath: '/system-settings/content',
   urlStyle: 'path',
 })
 
-export { CONTENT_DEFAULT_SECTION, CONTENT_SECTION_IDS }
+export const CONTENT_SECTION_IDS = contentRegistry.sectionIds
+export const CONTENT_DEFAULT_SECTION = contentRegistry.defaultSection
 export const getContentSectionNavItems = contentRegistry.getSectionNavItems
 export const getContentSectionContent = contentRegistry.getSectionContent
 export const getContentSectionMeta = contentRegistry.getSectionMeta

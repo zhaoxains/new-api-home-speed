@@ -28,15 +28,10 @@ import { NoticeSection } from '../maintenance/notice-section'
 import { SidebarModulesSection } from '../maintenance/sidebar-modules-section'
 import type { SiteSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
-import {
-  SITE_DEFAULT_SECTION,
-  SITE_SECTION,
-  SITE_SECTION_IDS,
-} from '../section-ids'
 
 const SITE_SECTIONS = [
   {
-    id: SITE_SECTION.systemInfo,
+    id: 'system-info',
     titleKey: 'System Information',
     build: (settings: SiteSettings) => (
       <SystemInfoSection
@@ -60,14 +55,14 @@ const SITE_SECTIONS = [
     ),
   },
   {
-    id: SITE_SECTION.notice,
+    id: 'notice',
     titleKey: 'System Notice',
     build: (settings: SiteSettings) => (
       <NoticeSection defaultValue={settings.Notice ?? ''} />
     ),
   },
   {
-    id: SITE_SECTION.headerNavigation,
+    id: 'header-navigation',
     titleKey: 'Header navigation',
     build: (settings: SiteSettings) => {
       const headerNavConfig = parseHeaderNavModules(settings.HeaderNavModules)
@@ -81,7 +76,7 @@ const SITE_SECTIONS = [
     },
   },
   {
-    id: SITE_SECTION.sidebarModules,
+    id: 'sidebar-modules',
     titleKey: 'Sidebar modules',
     build: (settings: SiteSettings) => {
       const sidebarConfig = parseSidebarModulesAdmin(
@@ -98,16 +93,17 @@ const SITE_SECTIONS = [
   },
 ] as const
 
-export type SiteSectionId = (typeof SITE_SECTION_IDS)[number]
+export type SiteSectionId = (typeof SITE_SECTIONS)[number]['id']
 
 const siteRegistry = createSectionRegistry<SiteSectionId, SiteSettings>({
   sections: SITE_SECTIONS,
-  defaultSection: SITE_DEFAULT_SECTION,
+  defaultSection: 'system-info',
   basePath: '/system-settings/site',
   urlStyle: 'path',
 })
 
-export { SITE_DEFAULT_SECTION, SITE_SECTION_IDS }
+export const SITE_SECTION_IDS = siteRegistry.sectionIds
+export const SITE_DEFAULT_SECTION = siteRegistry.defaultSection
 export const getSiteSectionNavItems = siteRegistry.getSectionNavItems
 export const getSiteSectionContent = siteRegistry.getSectionContent
 export const getSiteSectionMeta = siteRegistry.getSectionMeta

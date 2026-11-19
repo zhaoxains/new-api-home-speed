@@ -30,13 +30,13 @@ This is an AI API gateway/proxy built with Go. It aggregates 40+ upstream AI pro
 - Library: `nicksnyder/go-i18n/v2`
 - Languages: en, zh-CN, zh-TW
 - Scope: text with no web console in between (errors returned to AI clients, emails, notifications), translated with `i18n.T` / `i18n.Translate`
-- Web console API messages are English source text built with `common.NewMessage` / `common.ApiErrorT` / `common.ApiSuccessT`; the frontend translates them, so add each key to both supported frontend locale files
+- Web console API messages are English source text built with `common.NewMessage` / `common.ApiErrorT` / `common.ApiSuccessT`; the frontend translates them, so add each key to all seven frontend locale files
 - Stored log content is `[]*common.Message`; a fail reason written by the gateway is a fixed English sentence that is also a key in the frontend locale files
 - Server log lines are English text passed through `common.LogText`; `DEFAULT_LANGUAGE=zh-CN` prints the Chinese text of the lines that have one in `common/log_text.zh-CN.json`, and is the language of backend messages for a reader who states none
 
 ### Frontend (`web/src/i18n/`)
 - Library: `i18next` + `react-i18next` + `i18next-browser-languagedetector`
-- Languages: en and zh (Simplified Chinese)
+- Languages: en (base), zh (fallback), zh-TW, fr, ru, ja, vi
 - Translation files: `web/src/i18n/locales/{lang}.json` — flat JSON, keys are English source strings
 - Usage: `useTranslation()` hook, call `t('English key')` in components
 - CLI tools: `bun run i18n:sync` (from `web/`)
@@ -168,7 +168,7 @@ Tasks that touch none of these (for example unrelated frontend work, authenticat
   - `bun run i18n:*` for i18n tooling
 - Frontend UI text must support i18n with `i18next`/`react-i18next`. Use flat JSON locale files in `web/src/i18n/locales/{lang}.json`, with English source strings as keys.
 - In React components, use `useTranslation()` and call `t('English key')` for user-facing text.
-- **Number formatting and Intl locales (mandatory):** Reuse `@/lib/format` for ordinary number/compact-number display and `@/lib/currency` for monetary values; preserve each formatter's precision and unit semantics. The interface language code `zhCN` is NOT a valid Intl locale. Any interface language passed to `Intl.*`, `toLocaleString` / `toLocaleDateString` / `toLocaleTimeString`, or a locale-aware formatting helper MUST first pass through `toIntlLocale` from `@/i18n/languages`. Do not duplicate language mappings or pass raw language codes through aliases. Follow `web/AGENTS.md` for the lint rule and regression requirements.
+- **Number formatting and Intl locales (mandatory):** Reuse `@/lib/format` for ordinary number/compact-number display and `@/lib/currency` for monetary values; preserve each formatter's precision and unit semantics. Interface language codes such as `zhCN` / `zhTW` are NOT valid Intl locales. Any interface language passed to `Intl.*`, `toLocaleString` / `toLocaleDateString` / `toLocaleTimeString`, or a locale-aware formatting helper MUST first pass through `toIntlLocale` from `@/i18n/languages`. Do not duplicate language mappings or pass raw language codes through aliases. Follow `web/AGENTS.md` for the lint rule and regression requirements.
 - Follow `web/AGENTS.md` for detailed frontend conventions, including TypeScript, component structure, styling, accessibility, testing, and build checks.
 
 ### Project Governance

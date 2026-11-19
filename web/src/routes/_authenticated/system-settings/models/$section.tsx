@@ -22,7 +22,7 @@ import { ModelSettings } from '@/features/system-settings/models'
 import {
   MODELS_DEFAULT_SECTION,
   MODELS_SECTION_IDS,
-} from '@/features/system-settings/section-ids'
+} from '@/features/system-settings/models/section-registry.tsx'
 
 export const Route = createFileRoute(
   '/_authenticated/system-settings/models/$section'

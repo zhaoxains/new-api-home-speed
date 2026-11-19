@@ -25,15 +25,10 @@ import { PerformanceSection } from '../maintenance/performance-section'
 import { UpdateCheckerSection } from '../maintenance/update-checker-section'
 import type { OperationsSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
-import {
-  OPERATIONS_DEFAULT_SECTION,
-  OPERATIONS_SECTION,
-  OPERATIONS_SECTION_IDS,
-} from '../section-ids'
 
 const OPERATIONS_SECTIONS = [
   {
-    id: OPERATIONS_SECTION.behavior,
+    id: 'behavior',
     titleKey: 'System Behavior',
     build: (settings: OperationsSettings) => (
       <SystemBehaviorSection
@@ -46,7 +41,7 @@ const OPERATIONS_SECTIONS = [
     ),
   },
   {
-    id: OPERATIONS_SECTION.alerts,
+    id: 'alerts',
     titleKey: 'Model performance metrics',
     build: (settings: OperationsSettings) => (
       <MonitoringSettingsSection
@@ -64,7 +59,7 @@ const OPERATIONS_SECTIONS = [
     ),
   },
   {
-    id: OPERATIONS_SECTION.email,
+    id: 'email',
     titleKey: 'Email & Notifications',
     build: (settings: OperationsSettings) => (
       <EmailSettingsSection
@@ -89,7 +84,7 @@ const OPERATIONS_SECTIONS = [
     ),
   },
   {
-    id: OPERATIONS_SECTION.worker,
+    id: 'worker',
     titleKey: 'Worker Proxy',
     build: (settings: OperationsSettings) => (
       <WorkerSettingsSection
@@ -103,7 +98,7 @@ const OPERATIONS_SECTIONS = [
     ),
   },
   {
-    id: OPERATIONS_SECTION.logs,
+    id: 'logs',
     titleKey: 'Log Maintenance',
     build: (settings: OperationsSettings) => (
       <LogSettingsSection
@@ -113,12 +108,14 @@ const OPERATIONS_SECTIONS = [
             settings['log_setting.user_export_enabled'] ?? true,
           'log_setting.max_range_days':
             settings['log_setting.max_range_days'] ?? 365,
+          'system_task_setting.retention_days':
+            settings['system_task_setting.retention_days'] ?? 30,
         }}
       />
     ),
   },
   {
-    id: OPERATIONS_SECTION.performance,
+    id: 'performance',
     titleKey: 'Performance',
     build: (settings: OperationsSettings) => (
       <PerformanceSection
@@ -144,7 +141,7 @@ const OPERATIONS_SECTIONS = [
     ),
   },
   {
-    id: OPERATIONS_SECTION.updateChecker,
+    id: 'update-checker',
     titleKey: 'System maintenance',
     build: (
       _settings: OperationsSettings,
@@ -159,7 +156,7 @@ const OPERATIONS_SECTIONS = [
   },
 ] as const
 
-export type OperationsSectionId = (typeof OPERATIONS_SECTION_IDS)[number]
+export type OperationsSectionId = (typeof OPERATIONS_SECTIONS)[number]['id']
 
 const operationsRegistry = createSectionRegistry<
   OperationsSectionId,
@@ -167,12 +164,13 @@ const operationsRegistry = createSectionRegistry<
   [string | null | undefined, number | null | undefined]
 >({
   sections: OPERATIONS_SECTIONS,
-  defaultSection: OPERATIONS_DEFAULT_SECTION,
+  defaultSection: 'behavior',
   basePath: '/system-settings/operations',
   urlStyle: 'path',
 })
 
-export { OPERATIONS_DEFAULT_SECTION, OPERATIONS_SECTION_IDS }
+export const OPERATIONS_SECTION_IDS = operationsRegistry.sectionIds
+export const OPERATIONS_DEFAULT_SECTION = operationsRegistry.defaultSection
 export const getOperationsSectionNavItems =
   operationsRegistry.getSectionNavItems
 export const getOperationsSectionContent = operationsRegistry.getSectionContent

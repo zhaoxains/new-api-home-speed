@@ -25,11 +25,6 @@ import { PaymentSettingsSection } from '../integrations/payment-settings-section
 import { RatioSettingsCard } from '../models/ratio-settings-card'
 import type { BillingSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
-import {
-  BILLING_DEFAULT_SECTION,
-  BILLING_SECTION,
-  BILLING_SECTION_IDS,
-} from '../section-ids'
 
 const getModelDefaults = (settings: BillingSettings) => ({
   ModelPrice: settings.ModelPrice,
@@ -60,7 +55,7 @@ const getGroupDefaults = (settings: BillingSettings) => ({
 
 const BILLING_SECTIONS = [
   {
-    id: BILLING_SECTION.quota,
+    id: 'quota',
     titleKey: 'Quota Settings',
     build: (settings: BillingSettings) => (
       <QuotaSettingsSection
@@ -85,7 +80,7 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: BILLING_SECTION.currency,
+    id: 'currency',
     titleKey: 'Currency & Display',
     build: (settings: BillingSettings) => (
       <PricingSection
@@ -108,7 +103,7 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: BILLING_SECTION.modelPricing,
+    id: 'model-pricing',
     titleKey: 'Model Pricing',
     build: (settings: BillingSettings) => (
       <RatioSettingsCard
@@ -121,7 +116,7 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: BILLING_SECTION.groupPricing,
+    id: 'group-pricing',
     titleKey: 'Group Pricing',
     build: (settings: BillingSettings) => (
       <RatioSettingsCard
@@ -134,7 +129,7 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: BILLING_SECTION.payment,
+    id: 'payment',
     titleKey: 'Payment Gateway',
     build: (settings: BillingSettings) => (
       <PaymentSettingsSection
@@ -142,6 +137,11 @@ const BILLING_SECTIONS = [
           PayAddress: settings.PayAddress,
           EpayId: settings.EpayId,
           EpayKey: settings.EpayKey,
+          EpaySignType: settings['payment_setting.epay_sign_type'],
+          EpayMerchantPrivateKey:
+            settings['payment_setting.epay_merchant_private_key'],
+          EpayPlatformPublicKey:
+            settings['payment_setting.epay_platform_public_key'],
           Price: settings.Price,
           MinTopUp: settings.MinTopUp,
           CustomCallbackAddress: settings.CustomCallbackAddress,
@@ -194,7 +194,7 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: BILLING_SECTION.checkin,
+    id: 'checkin',
     titleKey: 'Check-in Rewards',
     build: (settings: BillingSettings) => (
       <CheckinSettingsSection
@@ -208,19 +208,20 @@ const BILLING_SECTIONS = [
   },
 ] as const
 
-export type BillingSectionId = (typeof BILLING_SECTION_IDS)[number]
+export type BillingSectionId = (typeof BILLING_SECTIONS)[number]['id']
 
 const billingRegistry = createSectionRegistry<
   BillingSectionId,
   BillingSettings
 >({
   sections: BILLING_SECTIONS,
-  defaultSection: BILLING_DEFAULT_SECTION,
+  defaultSection: 'quota',
   basePath: '/system-settings/billing',
   urlStyle: 'path',
 })
 
-export { BILLING_DEFAULT_SECTION, BILLING_SECTION_IDS }
+export const BILLING_SECTION_IDS = billingRegistry.sectionIds
+export const BILLING_DEFAULT_SECTION = billingRegistry.defaultSection
 export const getBillingSectionNavItems = billingRegistry.getSectionNavItems
 export const getBillingSectionContent = billingRegistry.getSectionContent
 export const getBillingSectionMeta = billingRegistry.getSectionMeta

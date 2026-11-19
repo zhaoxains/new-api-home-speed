@@ -23,15 +23,10 @@ import { BotProtectionSection } from './bot-protection-section'
 import { CustomOAuthSection } from './custom-oauth/custom-oauth-section'
 import { OAuthSection } from './oauth-section'
 import { PasskeySection } from './passkey-section'
-import {
-  AUTH_DEFAULT_SECTION,
-  AUTH_SECTION,
-  AUTH_SECTION_IDS,
-} from '../section-ids'
 
 const AUTH_SECTIONS = [
   {
-    id: AUTH_SECTION.basicAuth,
+    id: 'basic-auth',
     titleKey: 'Basic Authentication',
     build: (settings: AuthSettings) => (
       <BasicAuthSection
@@ -48,7 +43,7 @@ const AUTH_SECTIONS = [
     ),
   },
   {
-    id: AUTH_SECTION.oauth,
+    id: 'oauth',
     titleKey: 'OAuth Integrations',
     build: (settings: AuthSettings) => (
       <OAuthSection
@@ -85,7 +80,7 @@ const AUTH_SECTIONS = [
     ),
   },
   {
-    id: AUTH_SECTION.passkey,
+    id: 'passkey',
     titleKey: 'Passkey Authentication',
     build: (settings: AuthSettings) => (
       <PasskeySection
@@ -108,7 +103,7 @@ const AUTH_SECTIONS = [
     ),
   },
   {
-    id: AUTH_SECTION.botProtection,
+    id: 'bot-protection',
     titleKey: 'Bot Protection',
     build: (settings: AuthSettings) => (
       <BotProtectionSection
@@ -121,7 +116,7 @@ const AUTH_SECTIONS = [
     ),
   },
   {
-    id: AUTH_SECTION.customOAuth,
+    id: 'custom-oauth',
     titleKey: 'Custom OAuth',
     build: (settings: AuthSettings) => (
       <CustomOAuthSection serverAddress={settings.ServerAddress} />
@@ -129,16 +124,17 @@ const AUTH_SECTIONS = [
   },
 ] as const
 
-export type AuthSectionId = (typeof AUTH_SECTION_IDS)[number]
+export type AuthSectionId = (typeof AUTH_SECTIONS)[number]['id']
 
 const authRegistry = createSectionRegistry<AuthSectionId, AuthSettings>({
   sections: AUTH_SECTIONS,
-  defaultSection: AUTH_DEFAULT_SECTION,
+  defaultSection: 'basic-auth',
   basePath: '/system-settings/auth',
   urlStyle: 'path',
 })
 
-export { AUTH_DEFAULT_SECTION, AUTH_SECTION_IDS }
+export const AUTH_SECTION_IDS = authRegistry.sectionIds
+export const AUTH_DEFAULT_SECTION = authRegistry.defaultSection
 export const getAuthSectionNavItems = authRegistry.getSectionNavItems
 export const getAuthSectionContent = authRegistry.getSectionContent
 export const getAuthSectionMeta = authRegistry.getSectionMeta
